@@ -5,9 +5,18 @@ dl() {
     cd $2; curl -L -f -O $PROXY $1; cd -
 }
 
-VERSION="stable29/moodle-2.9.tgz"
-URL="https://download.moodle.org/download.php/direct/$VERSION"
+# Download Moodle
+URL="https://github.com/edurenye/moodle/archive/master.zip"
+mkdir /usr/local/src/moodle
+dl $URL /usr/local/src/moodle
 
-dl $URL /usr/local/src
+# Download Moosh
+URL="https://github.com/tmuras/moosh/archive/master.zip"
+mkdir /usr/local/src/moosh
+dl $URL /usr/local/src/moosh
 
+# Download Composer
+URL="https://getcomposer.org/installer"
+mkdir /usr/local/src/composer
+dl $URL /usr/local/src/composer
 

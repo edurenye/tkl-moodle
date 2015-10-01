@@ -2,6 +2,7 @@
 
 WEBROOT=/var/www/moodle
 DATAROOT=/var/www/moodledata
+SOURCEROOT=/usr/local/src
 
 DB_NAME=moodle
 DB_USER=moodle
@@ -10,11 +11,22 @@ DB_PASS=$(mcookie)
 ADMIN_USER=admin
 ADMIN_PASS=turnkey
 
-# unpack tarball to webroot and set permissions
-tar -zxf /usr/local/src/moodle*.tgz -C $(dirname $WEBROOT)
-rm /usr/local/src/moodle*.tgz
-
+# Unzip to webroot and set permissions
+unzip $SOURCEROOT/moodle/master.zip -d $(dirname $WEBROOT)
+mv /var/www/moodle-master $WEBROOT
+rm $SOURCEROOT/moodle/master.zip
 chown -R root:root $WEBROOT
+
+# Install Composer
+php $SOURCEROOT/composer/installer
+mv composer.phar /usr/local/bin/composer
+
+# Unzip and install Moosh
+unzip $SOURCEROOT/moosh/master.zip
+rm $SOURCEROOT/moosh/master.zip
+cd moosh-master
+composer install
+ln -s $PWD/moosh.php /bin/moosh
 
 # convenience execution variables
 MYSQL_BATCH="mysql --user=root --password=$MYSQL_PASS --batch"
@@ -51,7 +63,8 @@ php admin/cli/install.php \
     --adminuser=$ADMIN_USER \
     --adminpass=$ADMIN_PASS \
     --non-interactive \
-    --agree-license
+    --agree-license \
+    --allow-unstable
 
 chown -R www-data:www-data $DATAROOT
 chown root:www-data $WEBROOT/config.php
